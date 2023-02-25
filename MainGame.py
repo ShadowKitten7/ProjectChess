@@ -359,10 +359,9 @@ class MainGame:
                     if self.done:
                         break
                     if self.promotionOngoing:
-
                         self.promotionBanner(self.promotionSquare)
                         pos = event.pos
-                        x, y = pos[0] --self.xOffset()- self.c.scale // 2, pos[1] -self.yOffset()- self.c.scale // 2
+                        x, y = pos[0] -self.xOffset()- self.c.scale // 2, pos[1] -self.yOffset()- self.c.scale // 2
                         y = abs(
                             y - self.c.padding - self.promotionSquare[1] * self.c.scale
                         )
