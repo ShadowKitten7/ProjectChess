@@ -13,8 +13,6 @@ class Auth:
   def mainLoop(self):
     while True:
       for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-          self.end()
         if event.type == pygame.MOUSEBUTTONDOWN:  # If mouse pressed
           return
   def createFile(self):
