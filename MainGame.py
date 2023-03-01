@@ -370,7 +370,7 @@ class MainGame:
                             self.board.promote(
                                 self.promotionSquare[0],
                                 7 - self.promotionSquare[1],
-                                yIndex,
+                                yIndex
                             )
                             self.whiteToPlay = not self.whiteToPlay
                             self.promotionOngoing = False
