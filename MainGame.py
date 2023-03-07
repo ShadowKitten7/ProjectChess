@@ -60,7 +60,7 @@ class MainGame:
         self.moveList.append((p1, p2))
 
     def convertResource(self, src, scale=1.0):  # Resize and load each image
-        svg_string = open(src, "rt").read()
+        svg_string = open(src, "rt",encoding='utf-8').read()
         start = svg_string.find("<svg")
         if start > 0:
             svg_string = (
