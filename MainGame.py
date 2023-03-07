@@ -4,7 +4,7 @@ import time
 import io
 from datetime import timedelta
 import pygame.freetype
-class constants:
+class game_constants:
     def __init__(self) -> None:
         self.scale = 80  # Size of each square(pixels)
         self.timeToMove = 0.2  # seconds
@@ -33,7 +33,7 @@ class constants:
 class MainGame:
     def __init__(self, screen, whitePlayer, blackPlayer) -> None:
         self.board = Board()
-        self.c = constants()
+        self.c = game_constants()
         self.pieceIcons = []
         self.font = pygame.freetype.Font("assets/sf-cartoonist-regular.ttf", self.c.scale*3//8)
         self.namefont = pygame.freetype.Font("assets/sf-cartoonist-bold.ttf", self.c.scale*3//8)

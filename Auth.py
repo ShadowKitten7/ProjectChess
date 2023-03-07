@@ -1,15 +1,25 @@
 import pygame
+import pygame.freetype
+from MainGame import game_constants
 import hashlib
 import os
 
-
+class auth_constants:
+    def __init__(self):
+        self.background=(150, 192, 100)
 class Auth:
-    def __init__(self,screen,path) -> None:
+    def __init__(self,screen,path):
         self.whitePlayer=None
         self.blackPlayer=None
+        self.c=auth_constants()
         self.screen=screen
+        self.width=screen.get_width()
+        self.height=screen.get_width()
         self.encoding='utf-8'
         self.path='temp/'+path
+        self.gc=game_constants()
+        self.title_font=pygame.freetype.Font('assets/nexa-handmade.otf',self.gc.scale*5//8)
+        self.subtitle_font=pygame.freetype.Font('assets/nexa-handmade.otf',self.gc.scale*3//8)
         self.data={}
         self.unsavedData={}
         self.createFile()
@@ -19,8 +29,21 @@ class Auth:
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:  # If mouse pressed
                     return
-    def authorize(self,username):
-        pass
+                self.render()
+    def centreRect(self,rect,x,y):
+        return (x-rect.width//2,y-rect.height//2)
+    def render(self):
+        self.screen.fill(self.c.background)
+        self.renderTextCentred(self.title_font,(self.width//2,self.height//5),'Welcome to Project Chess')
+        self.renderTextCentred(self.subtitle_font,(self.width//2,self.height//5+self.gc.scale),'User Authentication')
+        pygame.display.update()
+    def renderTextCentred(self,font:pygame.freetype.Font,pos,text):
+        rect=font.get_rect(text)
+        font.render_to(self.screen,self.centreRect(rect,pos[0],pos[1]),text)
+    def authorize(self,username,password):
+        if username in self.data and self.data[username][1]==self.hash(password):
+            return True
+        return False
     def readData(self):
         file=open(self.path,'r',encoding='utf-8')
         data=[i[:-1].split(',') for i in file.readlines()]

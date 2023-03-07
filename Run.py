@@ -1,12 +1,13 @@
-from MainGame import MainGame, constants
+from MainGame import MainGame, game_constants
 import pygame
 from Auth import Auth
 pygame.display.set_caption("Chess")
 whitePlayer = ["White_Player",'', 1000]
 blackPlayer = ["Black_Player",'', 1520]
 pygame.init()
-screen=pygame.display.set_mode(constants().screenSize())
+screen=pygame.display.set_mode(game_constants().screenSize())
 auth = Auth(screen,'cat.txt')
+auth.mainLoop()
 game = MainGame(screen, whitePlayer, blackPlayer)
 
 def convert(x, y):
