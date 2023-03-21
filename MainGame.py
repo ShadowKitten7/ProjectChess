@@ -3,6 +3,7 @@ import pygame
 import time
 import io
 from datetime import timedelta
+import pickle
 import pygame.freetype
 class game_constants:
     def __init__(self) -> None:
@@ -29,7 +30,33 @@ class game_constants:
             self.scale * 8 + 2 * self.padding + self.label_space + 2 * self.nameSpace,
         )
 
-
+class State:
+    def __init__(self,gameObject):
+        self.board=gameObject.board.board
+        self.whitePlayer=gameObject.whitePlayer
+        self.blackPlayer=gameObject.blackPlayer
+        self.moveList=gameObject.moveList
+        self.whiteToPlay=gameObject.whiteToPlay
+    def unwrap(self,gameObject):
+        gameObject.board.board=self.board
+        gameObject.whitePlayer=self.whitePlayer
+        gameObject.blackPlayer=self.blackPlayer
+        gameObject.moveList=self.moveList
+        gameObject.whiteToPlay=self.whiteToPlay
+    def saveState(self):
+        with open('temp/state.bin','wb') as file:
+            pickle.dump(self,file)
+def retrieveState(gameObject):
+    try:
+        with open('temp/state.bin','rb') as file:
+            pickle.load(file).unwrap(gameObject)
+        with open('temp/state.bin','wb') as file:
+            pass
+    except FileNotFoundError:
+        return
+    except EOFError:
+        return
+    
 class MainGame:
     def __init__(self, screen, whitePlayer, blackPlayer) -> None:
         self.board = Board()
@@ -90,7 +117,6 @@ class MainGame:
 
     def xOffset(self, x=0):
         return x + self.c.padding + self.c.label_space
-
     def yOffset(self, y=0):
         return y + self.c.padding + self.c.nameSpace
 
@@ -315,8 +341,14 @@ class MainGame:
         self.t = round(speed / timedelta(seconds=endTime - startTime).total_seconds())
 
     def end(self):
-        if len(self.moveList)!=0:
-            print(self.moveList)
+        if self.done:
+            if len(self.moveList)!=0:
+                print(self.moveList)
+            with open('temp/state.bin','wb') as file:
+                pass
+        else:
+            state=State(self)
+            state.saveState()
         exit()
 
     def makeMove(self, startPos, endPos):
@@ -351,6 +383,8 @@ class MainGame:
             self.render()
 
     def playGame(self):
+        retrieveState(self)
+        self.render()
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -390,7 +424,7 @@ class MainGame:
                         self.startPos[1] = (
                             self.startPos[1] - self.yOffset()
                         ) // self.c.scale
-                        if self.startPos[0] < 0 or self.startPos[1] < 0:
+                        if not (7>self.startPos[0]>=0 and 7>self.startPos[1]>=0):
                             self.startPos = [-1, -1]
                         # Set startPos to hold square coordinates according to representation on screen
                     else:
