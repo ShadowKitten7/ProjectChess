@@ -1,12 +1,13 @@
-from MainGame import MainGame, game_constants
+from MainGame import MainGame, game_constants,checkRequirements
 import pygame
 from Auth import Auth
 pygame.display.set_caption("Chess")
 whitePlayer = ["White_Player",'', 1000]
 blackPlayer = ["Black_Player",'', 1520]
 pygame.init()
+checkRequirements()
 screen=pygame.display.set_mode(game_constants().screenSize())
-auth = Auth(screen,'cat.txt')
+auth = Auth(screen,'users.txt')
 auth.mainLoop()
 game = MainGame(screen, whitePlayer, blackPlayer)
 
@@ -16,7 +17,6 @@ def convert(x, y):
 
 def convertMove(p1, p2):
     return convert(p1[0], p1[1]) + convert(p2[0], p2[1])
-
 
 def playMoves(moves):
     game.turbo()

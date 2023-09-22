@@ -2,6 +2,7 @@ from Chessboard import Board
 import pygame
 import time
 import io
+import os
 from datetime import timedelta
 import pickle
 import pygame.freetype
@@ -46,6 +47,12 @@ class State:
     def saveState(self):
         with open('temp/state.bin','wb') as file:
             pickle.dump(self,file)
+def checkRequirements():
+    if not os.path.isdir('temp/'):
+        os.mkdir('temp/')
+        with open('temp/users.txt','x'):
+            pass
+        
 def retrieveState(gameObject):
     try:
         with open('temp/state.bin','rb') as file:
@@ -382,8 +389,9 @@ class MainGame:
         if not self.promotionOngoing and not self.done:
             self.render()
 
-    def playGame(self):
-        retrieveState(self)
+    def playGame(self,reload=False):
+        if reload:
+            retrieveState(self)
         self.render()
         while True:
             for event in pygame.event.get():
@@ -424,7 +432,7 @@ class MainGame:
                         self.startPos[1] = (
                             self.startPos[1] - self.yOffset()
                         ) // self.c.scale
-                        if not (7>self.startPos[0]>=0 and 7>self.startPos[1]>=0):
+                        if not (7>=self.startPos[0]>=0 and 7>=self.startPos[1]>=0):
                             self.startPos = [-1, -1]
                         # Set startPos to hold square coordinates according to representation on screen
                     else:
