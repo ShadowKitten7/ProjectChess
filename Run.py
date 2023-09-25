@@ -25,6 +25,6 @@ def playMoves(moves):
         game.makeMove((m[0], 7 - m[1]), (m[2], 7 - m[3]))
     game.turbo(False)
 
-moves=[('d2', 'd4'), ('e7', 'e5'), ('d4', 'e5'), ('f7', 'f6'), ('e5', 'f6'), ('f8', 'e7'), ('f6', 'g7'), ('g8', 'f6'), ('g7', 'h8'), ('f6', 'e4')]
-#playMoves(moves)
+moves=[('d2', 'd4'), ('e7', 'e5'), ('d4', 'e5'), ('g8', 'f6')]
+playMoves(moves)
 game.playGame()

@@ -8,7 +8,7 @@ import pickle
 import pygame.freetype
 class game_constants:
     def __init__(self) -> None:
-        self.scale = 80  # Size of each square(pixels)
+        self.scale = 60  # Size of each square(pixels)
         self.timeToMove = 0.2  # seconds
         self.white = (255, 253, 208)  # colour to display for white squares
         self.black = (14, 119, 14)  # colour to display for black squares

@@ -6,7 +6,7 @@ import os
 
 class auth_constants:
     def __init__(self):
-        self.background=(150, 192, 100)
+        self.background=(138, 138, 138)
 class Auth:
     def __init__(self,screen,path):
         self.whitePlayer=None
@@ -24,12 +24,34 @@ class Auth:
         self.unsavedData={}
         self.createFile()
         self.readData()
+        self.username=''
+        self.password=''
+        self.usernameBox=InputBox((self.width//3,self.width//2),(self.width//3,40),self.subtitle_font)
+        self.passwordBox=PasswordBox((self.width//3,2*self.width//3),(self.width//3,40),self.subtitle_font)
     def mainLoop(self):
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
-                    
+                u=self.usernameBox.handle_event(event)
+                p=self.passwordBox.handle_event(event)
+                if u is not None:
+                    if type(u)==bool:
+                        self.passwordBox.active=False
+                        self.password=self.passwordBox.text
+                    else:
+                        self.username=u
+                if p is not None:
+                    if type(p)==bool:
+                        self.usernameBox.active=False
+                        self.username=self.usernameBox.text
+                    else:
+                        self.password=p
+                if not( self.password == '' or self.username==''):
+                    print('Potential login',self.username,self.password)
+                    self.username=''
+                    self.password=''
+                    return
                 self.render()
     def centreRect(self,rect,x,y):
         return (x-rect.width//2,y-rect.height//2)
@@ -38,7 +60,8 @@ class Auth:
         self.renderTextCentred(self.title_font,(self.width//2,self.height//5),'Welcome to Project Chess')
         self.renderTextCentred(self.subtitle_font,(self.width//2,self.height//5+self.gc.scale),'User Authentication')
         self.renderTextCentred(self.subtitle_font,(self.width//2,self.height//5+2*self.gc.scale),'Enter Username')
-        
+        self.usernameBox.draw(self.screen)
+        self.passwordBox.draw(self.screen)
         pygame.display.update()
     def renderTextCentred(self,font:pygame.freetype.Font,pos,text):
         rect=font.get_rect(text)
@@ -88,29 +111,44 @@ class Auth:
 class InputBox:
     def __init__(self,pos,size,font,text='') -> None:
         self.rect=pygame.Rect(pos[0],pos[1],size[0],size[1])
-        self.COLOUR_INACTIVE=(97, 201, 137)
-        self.COLOUR_ACTIVE=(199, 201, 97)
+        self.COLOUR_INACTIVE=(108, 108, 108)
+        self.COLOUR_ACTIVE=(158, 158, 158)
         self.colour=self.COLOUR_INACTIVE
         self.text=text
         self.text_surface=font.render(text,True,self.colour)
         self.active=False
         self.font=font
     def handle_event(self,event):#returns if a change has been made
-        if event==pygame.MOUSEBUTTONDOWN:
+        c=False
+        if event.type==pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos) and not self.active:
                 self.active=True
-            self.colour = self.COLOUR_ACTIVE if self.active else self.COLOUR_INACTIVE
-        if event==pygame.KEYDOWN and self.active:
-            if event.key==pygame.K_RETURN:
-                print(self.text)
+                c=True
+            else:
                 self.active=False
+        if event.type==pygame.KEYDOWN and self.active:
+            if event.key==pygame.K_RETURN:
+                self.active=False
+                return self.text
+                
             elif event.key==pygame.K_BACKSPACE:
                 self.text=self.text[:-1]
             else:
                 self.text+=event.unicode
-            self.text_surface=self.font.render(self.text,True,self.colour)
+        self.colour = self.COLOUR_ACTIVE if self.active else self.COLOUR_INACTIVE
+        if event.type==pygame.MOUSEBUTTONDOWN and c:
             return True
-        return False
+    def centreRect(self,rect,x,y):
+        return (x-rect.width//2,y-rect.height//2)
+    def renderCentred(self,screen,pos,text):
+        rect=self.font.get_rect(text)
+        self.font.render_to(screen,self.centreRect(rect,pos[0],pos[1]),text)
     def draw(self,screen):
-        screen.blit(self.text_surface, (self.rect.x+5, self.rect.y+5))
         pygame.draw.rect(screen,self.colour,self.rect)
+        self.renderCentred(screen,(self.rect[0]+self.rect.width//2,self.rect[1]+self.rect.height//2),self.text)
+class PasswordBox(InputBox):
+    def __init__(self, pos, size, font, text='') -> None:
+        super().__init__(pos, size, font, text)
+    def draw(self,screen):
+        pygame.draw.rect(screen,self.colour,self.rect)
+        self.renderCentred(screen,(self.rect[0]+self.rect.width//2,self.rect[1]+self.rect.height//2),'x'*len(self.text))
