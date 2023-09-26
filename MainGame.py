@@ -8,7 +8,7 @@ import pickle
 import pygame.freetype
 class game_constants:
     def __init__(self) -> None:
-        self.scale = 60  # Size of each square(pixels)
+        self.scale = 70  # Size of each square(pixels)
         self.timeToMove = 0.2  # seconds
         self.white = (255, 253, 208)  # colour to display for white squares
         self.black = (14, 119, 14)  # colour to display for black squares
@@ -262,7 +262,7 @@ class MainGame:
                 self.c.icon[1],
             ),
         )
-        t = self.whitePlayer[0] + "  [" + str(self.whitePlayer[2]) + "]"
+        t = self.whitePlayer[0] + "  [" + str(self.whitePlayer[1]) + "]"
         self.namefont.render_to(
             self.screen,
             (
@@ -271,7 +271,7 @@ class MainGame:
             ),
             t,
         )
-        t = self.blackPlayer[0] + "  [" + str(self.blackPlayer[2]) + "]"
+        t = self.blackPlayer[0] + "  [" + str(self.blackPlayer[1]) + "]"
         self.namefont.render_to(
             self.screen, (self.xOffset(self.c.scale), self.c.padding), t
         )
@@ -349,14 +349,13 @@ class MainGame:
 
     def end(self):
         if self.done:
-            if len(self.moveList)!=0:
-                print(self.moveList)
-            with open('temp/state.bin','wb') as file:
+            with open('temp/state.bin','wb'):
                 pass
         else:
             state=State(self)
             state.saveState()
-        exit()
+        
+        return self.moveList
 
     def makeMove(self, startPos, endPos):
         piece = self.board.getPiece(
@@ -396,7 +395,7 @@ class MainGame:
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.end()
+                    return self.end()
                 if event.type == pygame.MOUSEBUTTONDOWN:  # If mouse pressed
                     if self.done:
                         break
