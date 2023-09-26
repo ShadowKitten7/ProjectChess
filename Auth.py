@@ -5,22 +5,17 @@ import pygame
 import pygame.freetype
 
 from MainGame import game_constants
-
-
-class auth_constants:
-    def __init__(self):
-        self.background=(108, 108, 108)
 class Auth:
     def __init__(self,screen,path):
         self.whitePlayer=None
         self.blackPlayer=None
-        self.c=auth_constants()
         self.screen=screen
         self.width=screen.get_width()
         self.height=screen.get_width()
         self.encoding='utf-8'
         self.path='temp/'+path
         self.gc=game_constants()
+        self.background=(108, 108, 108)
         self.title_font=pygame.freetype.Font('assets/nexa-handmade.otf',self.gc.scale*3//4)
         self.subtitle_font=pygame.freetype.Font('assets/RobotoMono-SemiBold.ttf',self.gc.scale//2)
         self.auth_font=pygame.freetype.Font('assets/RobotoMono-Regular.ttf',self.gc.scale//3)
@@ -65,7 +60,7 @@ class Auth:
     def centreRect(self,rect,x,y):
         return (x-rect.width//2,y-rect.height//2)
     def render(self):
-        self.screen.fill(self.c.background)
+        self.screen.fill(self.background)
         self.renderTextCentred(self.title_font,(self.width//2,self.height//5),'Welcome to Project Chess')
         self.renderTextCentred(self.subtitle_font,(self.width//2,self.height//5+self.gc.scale),'User Authentication')
         pygame.draw.line(self.screen,(0,0,0),(self.width//4,self.height//5+self.gc.scale*4//3),(self.width*3//4,self.height//5+self.gc.scale*4//3),width=3)
