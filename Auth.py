@@ -26,8 +26,14 @@ class Auth:
         self.charHeight=30
         self.usernameBox=InputBox((self.width//2-self.gc.scale*2//3,self.height//2),(self.width//3,self.charHeight),self.auth_font)
         self.passwordBox=PasswordBox((self.width//2-self.gc.scale*2//3,self.height*3//5),(self.width//3,self.charHeight),self.auth_font)
-        self.button=Button((self.width//2-self.gc.scale*3//2,self.height*3//4),(self.gc.scale*3,self.charHeight*3//2),self.auth_font,'Login')
+        self.loginbutton=Button((self.width//2-self.gc.scale*3//2,self.height*3//4),(self.gc.scale*3,self.charHeight*3//2),self.auth_font,'Login')
+        self.signupbutton=Button((self.width*2//3,self.height*3//4),(self.gc.scale*3,self.charHeight*3//2),self.auth_font,'Sign up')
         self.alert=''
+        self.loginState=0
+        self.toRender=True
+        #0 for normal login
+        #1 for login with sign up option
+        #2 for sign up
         self.players=[]
     def mainLoop(self):
         while True:
@@ -36,14 +42,20 @@ class Auth:
                     self.saveData()
                     return None
                 if len(self.players)==2:
-                    if self.button.handle_event(event):
+                    if self.loginbutton.handle_event(event):
                         return self.players
-                self.login(event)
+                if self.loginState in (0,1):
+                    self.login(event)
                 self.render()
     def login(self,event):
-        self.usernameBox.handle_event(event)
-        self.passwordBox.handle_event(event)
-        if self.button.handle_event(event):
+        if self.usernameBox.handle_event(event) or self.passwordBox.handle_event(event):
+            self.toRender=True
+        if self.loginState==1:
+            if self.signupbutton.handle_event(event):
+                self.loginState=2
+                self.toRender=True
+        if self.loginbutton.handle_event(event):
+            self.toRender=True
             username=self.usernameBox.getText()
             password=self.passwordBox.getText()
             valid=True
@@ -59,7 +71,7 @@ class Auth:
                 return False        
     def centreRect(self,rect,x,y):
         return (x-rect.width//2,y-rect.height//2)
-    def render(self):
+    def renderLogin(self):
         self.screen.fill(self.background)
         self.renderTextCentred(self.title_font,(self.width//2,self.height//5),'Welcome to Project Chess')
         self.renderTextCentred(self.subtitle_font,(self.width//2,self.height//5+self.gc.scale),'User Authentication')
@@ -70,37 +82,59 @@ class Auth:
             self.renderTextCentred(self.auth_font,(self.width//3,self.height*3//5+self.charHeight//2),'Password')
             self.usernameBox.draw(self.screen)
             self.passwordBox.draw(self.screen)
-        self.button.draw(self.screen)
+        self.loginbutton.draw(self.screen)
+        if self.loginState==1:
+            self.signupbutton.draw(self.screen)
         self.renderTextCentred(self.auth_font,(self.width//2,self.height*7//10),self.alert)
         self.renderTextCentred(self.auth_font,(self.width//3,self.height*17//20),'Player 1')
+        pygame.draw.line(self.screen,(0,0,0),(self.width//3-self.gc.scale*2//3,self.height*7//8),(self.width//3+self.gc.scale*2//3,self.height*7//8),width=2)
+        pygame.draw.line(self.screen,(0,0,0),(self.width*2//3-self.gc.scale*2//3,self.height*7//8),(self.width*2//3+self.gc.scale*2//3,self.height*7//8),width=2)
         if len(self.players)>=1:
             self.renderTextCentred(self.auth_font,(self.width//3,self.height*9//10),self.players[0][0])
         self.renderTextCentred(self.auth_font,(self.width*2//3,self.height*17//20),'Player 2')
         if len(self.players)==2:
             self.renderTextCentred(self.auth_font,(self.width*2//3,self.height*9//10),self.players[1][0])
+    def renderSignUp():
+        pass
+    def render(self):
+        if not self.toRender:
+            return 
+        if self.loginState in (0,1):
+            self.renderLogin()
+        else:
+            self.screen.fill(self.background)
         pygame.display.update()
+        self.toRender=False
     def renderTextCentred(self,font:pygame.freetype.Font,pos,text):
         rect=font.get_rect(text)
         font.render_to(self.screen,self.centreRect(rect,pos[0],pos[1]),text)
 
     def authorize(self,username,password):
         if username not in self.data:
-            self.alert='Invalid username'
+            self.alert='Invalid username, Sign up?'
             self.usernameBox.error()
             self.usernameBox.clear()
             self.passwordBox.clear()
+            self.loginState=1
             return False
         if not self.data[username][1]==self.hash(password):
             self.alert = 'Invalid password'
             self.passwordBox.clear()
             self.passwordBox.error()
             return False
+        if len(self.players)==1 and self.players[0][0]==username:
+            self.alert="User '{0}' is already signed in".format(username)
+            self.usernameBox.error()
+            self.usernameBox.clear()
+            self.passwordBox.clear()
+            return False
         self.players.append((username,self.data[username][0]))
         self.usernameBox.clear()
         self.passwordBox.clear()
+        self.loginState=0
         self.alert=''
         if len(self.players)==2:
-            self.button.text='Play'
+            self.loginbutton.text='Play'
         return True
     def readData(self):
         file=open(self.path,'r',encoding='utf-8')
@@ -171,6 +205,7 @@ class InputBox:
                 self.text=self.text[:-1]
             else:
                 self.text+=event.unicode
+            return True
         return event.type==pygame.MOUSEBUTTONDOWN and c
     def error(self):
         self.colour=self.COLOUR_ERROR
