@@ -124,9 +124,9 @@ class Board:
     Replace the pawn with the required piece of the same colour
     """
 
-    def promote(self, x, y, type):
+    def promote(self, x, y,pieceType):
         p = self.getSquare(x, y).removePiece()
-        match type:
+        match pieceType:
             case 0:
                 self.addPiece(x,y,p.colour,PieceType.Queen)
             case 1:
@@ -217,7 +217,7 @@ class Board:
         xDiff = abs(startPos.x - endPos.x)
         yDiff = abs(startPos.y - endPos.y)
         if xDiff + yDiff == 1 or xDiff * yDiff == 1:
-            return endPos.piece == None or endPos.piece.colour != startPos.piece.colour
+            return endPos.piece is None or endPos.piece.colour != startPos.piece.colour
         return False
 
 
@@ -250,7 +250,7 @@ class Board:
                     yDiff == 2
                     and startPos.y == 1
                     and endPos.piece == None
-                    and self.getPiece(startPos.x, startPos.y + 1) == None
+                    and self.getPiece(startPos.x, startPos.y + 1) is None
                 ):
                     # At starting position, moving 2 squares, both squares one ahead and target square empty
                     return True

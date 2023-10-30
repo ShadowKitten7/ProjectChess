@@ -2,11 +2,13 @@ from Chessboard import Board
 import pygame
 import time
 import io
+import os
 from datetime import timedelta
+import pickle
 import pygame.freetype
-class constants:
+class game_constants:
     def __init__(self) -> None:
-        self.scale = 80  # Size of each square(pixels)
+        self.scale = 70  # Size of each square(pixels)
         self.timeToMove = 0.2  # seconds
         self.white = (255, 253, 208)  # colour to display for white squares
         self.black = (14, 119, 14)  # colour to display for black squares
@@ -29,11 +31,43 @@ class constants:
             self.scale * 8 + 2 * self.padding + self.label_space + 2 * self.nameSpace,
         )
 
-
+class State:
+    def __init__(self,gameObject):
+        self.board=gameObject.board.board
+        self.whitePlayer=gameObject.whitePlayer
+        self.blackPlayer=gameObject.blackPlayer
+        self.moveList=gameObject.moveList
+        self.whiteToPlay=gameObject.whiteToPlay
+    def unwrap(self,gameObject):
+        gameObject.board.board=self.board
+        gameObject.whitePlayer=self.whitePlayer
+        gameObject.blackPlayer=self.blackPlayer
+        gameObject.moveList=self.moveList
+        gameObject.whiteToPlay=self.whiteToPlay
+    def saveState(self):
+        with open('temp/state.bin','wb') as file:
+            pickle.dump(self,file)
+def checkRequirements():
+    if not os.path.isdir('temp/'):
+        os.mkdir('temp/')
+        with open('temp/users.txt','x'):
+            pass
+        
+def retrieveState(gameObject):
+    try:
+        with open('temp/state.bin','rb') as file:
+            pickle.load(file).unwrap(gameObject)
+        with open('temp/state.bin','wb') as file:
+            pass
+    except FileNotFoundError:
+        return
+    except EOFError:
+        return
+    
 class MainGame:
     def __init__(self, screen, whitePlayer, blackPlayer) -> None:
         self.board = Board()
-        self.c = constants()
+        self.c = game_constants()
         self.pieceIcons = []
         self.font = pygame.freetype.Font("assets/sf-cartoonist-regular.ttf", self.c.scale*3//8)
         self.namefont = pygame.freetype.Font("assets/sf-cartoonist-bold.ttf", self.c.scale*3//8)
@@ -60,7 +94,7 @@ class MainGame:
         self.moveList.append((p1, p2))
 
     def convertResource(self, src, scale=1.0):  # Resize and load each image
-        svg_string = open(src, "rt").read()
+        svg_string = open(src, "rt",encoding='utf-8').read()
         start = svg_string.find("<svg")
         if start > 0:
             svg_string = (
@@ -90,7 +124,6 @@ class MainGame:
 
     def xOffset(self, x=0):
         return x + self.c.padding + self.c.label_space
-
     def yOffset(self, y=0):
         return y + self.c.padding + self.c.nameSpace
 
@@ -229,7 +262,7 @@ class MainGame:
                 self.c.icon[1],
             ),
         )
-        t = self.whitePlayer[0] + "  [" + str(self.whitePlayer[2]) + "]"
+        t = self.whitePlayer[0] + "  [" + str(self.whitePlayer[1]) + "]"
         self.namefont.render_to(
             self.screen,
             (
@@ -238,7 +271,7 @@ class MainGame:
             ),
             t,
         )
-        t = self.blackPlayer[0] + "  [" + str(self.blackPlayer[2]) + "]"
+        t = self.blackPlayer[0] + "  [" + str(self.blackPlayer[1]) + "]"
         self.namefont.render_to(
             self.screen, (self.xOffset(self.c.scale), self.c.padding), t
         )
@@ -315,9 +348,14 @@ class MainGame:
         self.t = round(speed / timedelta(seconds=endTime - startTime).total_seconds())
 
     def end(self):
-        if len(self.moveList)!=0:
-            print(self.moveList)
-        exit()
+        if self.done:
+            with open('temp/state.bin','wb'):
+                pass
+        else:
+            state=State(self)
+            state.saveState()
+        
+        return self.moveList
 
     def makeMove(self, startPos, endPos):
         piece = self.board.getPiece(
@@ -350,11 +388,14 @@ class MainGame:
         if not self.promotionOngoing and not self.done:
             self.render()
 
-    def playGame(self):
+    def playGame(self,reload=False):
+        if reload:
+            retrieveState(self)
+        self.render()
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.end()
+                    return self.end()
                 if event.type == pygame.MOUSEBUTTONDOWN:  # If mouse pressed
                     if self.done:
                         break
@@ -370,7 +411,7 @@ class MainGame:
                             self.board.promote(
                                 self.promotionSquare[0],
                                 7 - self.promotionSquare[1],
-                                yIndex,
+                                yIndex
                             )
                             self.whiteToPlay = not self.whiteToPlay
                             self.promotionOngoing = False
@@ -390,7 +431,7 @@ class MainGame:
                         self.startPos[1] = (
                             self.startPos[1] - self.yOffset()
                         ) // self.c.scale
-                        if self.startPos[0] < 0 or self.startPos[1] < 0:
+                        if not (7>=self.startPos[0]>=0 and 7>=self.startPos[1]>=0):
                             self.startPos = [-1, -1]
                         # Set startPos to hold square coordinates according to representation on screen
                     else:
