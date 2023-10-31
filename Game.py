@@ -58,19 +58,94 @@ class Board:
     while self._boundsCheck(x,y):
       if (x,y)==finalPos:
         if self._isEmpty(finalPos[0],finalPos[1]): return True
-        finalPiece = self._getPiece(finalPos[0],finalPos[1])
         initialPiece = self._getPiece(initialPos[0],initialPos[1])
+        finalPiece = self._getPiece(finalPos[0],finalPos[1])
         return initialPiece.colour != finalPiece.colour
       if not self._isEmpty(x,y):
         return False
       x,y=x+xDir,y+yDir
     return False
   
+  def kingMove(self,xInitial:int,yInitial:int,xFinal:int,yFinal:int) ->bool:
+    xDiff = xInitial-xFinal
+    yDiff = yInitial-yFinal
+    if abs(xDiff*yDiff) in (0,1):
+      initialPiece = self._getPiece(xInitial,yInitial)
+      finalPiece = self._getPiece(xFinal,yFinal)
+      return self._isEmpty(xFinal,yFinal) or initialPiece.colour!=finalPiece.colour
+    return False
+  
+  def knightMove(self,xInitial:int,yInitial:int,xFinal:int,yFinal:int) ->bool:
+    xDiff = xInitial-xFinal
+    yDiff = yInitial-yFinal
+    if abs(xDiff*yDiff) == 2:
+      initialPiece = self._getPiece(xInitial,yInitial)
+      finalPiece = self._getPiece(xFinal,yFinal)
+      return self._isEmpty(xFinal,yFinal) or initialPiece.colour!=finalPiece.colour
+    return False
+  def rookMove(self,xInitial:int,yInitial:int,xFinal:int,yFinal:int) ->bool:
+    for direction in -1,1:
+      if self.beam((xInitial,yInitial),(xFinal,yFinal),0,direction):
+        return True
+      if self.beam((xInitial,yInitial),(xFinal,yFinal),direction,0):
+        return True
+    return False
+  def bishopMove(self,xInitial:int,yInitial:int,xFinal:int,yFinal:int) ->bool:
+    for xDirection in -1,1:
+      for yDirection in -1,1:
+        if self.beam((xInitial,yInitial),(xFinal,yFinal),xDirection,yDirection):
+          return True
+    return False
+  def queenMove(self,xInitial:int,yInitial:int,xFinal:int,yFinal:int) ->bool:
+    for xDirection in -1,0,1:
+      for yDirection in -1,0,1:
+        if self.beam((xInitial,yInitial),(xFinal,yFinal),xDirection,yDirection):
+          return True
+    return False
+  def pawnMove(self,xInitial:int,yInitial:int,xFinal:int,yFinal:int) ->bool:
+    xDiff = xFinal-xInitial
+    yDiff = yFinal-yInitial
+    if self._getPiece(xInitial,yInitial).colour.value== 'White':
+      if xDiff==0:
+        if not self._isEmpty(xFinal,yFinal): return False
+        if yDiff == 1:
+          return True
+        if yDiff == 2 and yInitial==1:
+          return True
+        return False
+      elif abs(xDiff)==1 and yDiff==1:
+        if self._isEmpty(xFinal,yFinal): return False
+        return self._getPiece(xFinal,yFinal).colour.value=='Black'
+    else:
+      if xDiff==0:
+        if not self._isEmpty(xFinal,yFinal): return False
+        if yDiff == -1:
+          return True
+        if yDiff == -2 and yInitial==6:
+          return True
+        return False
+      elif abs(xDiff)==1 and yDiff==-1:
+        if self._isEmpty(xFinal,yFinal): return False
+        return self._getPiece(xFinal,yFinal).colour.value=='White'
+    return False
   def handleMove(self,xInitial:int,yInitial:int,xFinal:int,yFinal:int) ->bool:
+    if (xInitial,yInitial) == (xFinal,yFinal): return False
     if not self._boundsCheck(xInitial,yInitial): return False
     if not self._boundsCheck(xFinal,yFinal):return False
     if self._isEmpty(xInitial,yInitial):return False
-    match 
+    match self._getPiece(xInitial,yInitial).type.value:
+      case 'King':
+        return self.kingMove(xInitial,yInitial,xFinal,yFinal)
+      case 'Knight':
+        return self.knightMove(xInitial,yInitial,xFinal,yFinal)
+      case 'Rook':
+        return self.rookMove(xInitial,yInitial,xFinal,yFinal)
+      case 'Bishop':
+        return self.bishopMove(xInitial,yInitial,xFinal,yFinal)
+      case 'Queen':
+        return self.queenMove(xInitial,yInitial,xFinal,yFinal)
+      case 'Pawn':
+        return self.pawnMove(xInitial,yInitial,xFinal,yFinal)
   def display(self):
     for y in range(self.boardSize):
       print(self.boardSize-y-1,end='\t')
