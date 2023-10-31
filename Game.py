@@ -32,6 +32,10 @@ class Board:
     return self.board[x][y]
   def _setPiece(self,x:int,y:int,piece:Piece):
     self.board[x][y]=piece
+  def _removePiece(self,x:int,y:int)->Piece:
+    piece=self.board[x][y]
+    self.board[x][y]=None
+    return piece
   def getCode(self,x:int,y:int):
     return chr(ord('A')+y)+chr(ord('1')+x)
   def _populate(self):
@@ -46,6 +50,27 @@ class Board:
       self._setPiece(i,0,Piece(PieceColour.White,types[i]))
       #Black pieces
       self._setPiece(i,7,Piece(PieceColour.Black,types[i]))
+  def _boundsCheck(self,x:int,y:int):
+    return 0 <= x < self.boardSize and 0 <= y < self.boardSize
+  
+  def beam(self,initialPos:tuple,finalPos:tuple,xDir:int,yDir:int):
+    x,y=initialPos[0]+xDir,initialPos[1]+yDir;
+    while self._boundsCheck(x,y):
+      if (x,y)==finalPos:
+        if self._isEmpty(finalPos[0],finalPos[1]): return True
+        finalPiece = self._getPiece(finalPos[0],finalPos[1])
+        initialPiece = self._getPiece(initialPos[0],initialPos[1])
+        return initialPiece.colour != finalPiece.colour
+      if not self._isEmpty(x,y):
+        return False
+      x,y=x+xDir,y+yDir
+    return False
+  
+  def handleMove(self,xInitial:int,yInitial:int,xFinal:int,yFinal:int) ->bool:
+    if not self._boundsCheck(xInitial,yInitial): return False
+    if not self._boundsCheck(xFinal,yFinal):return False
+    if self._isEmpty(xInitial,yInitial):return False
+    match 
   def display(self):
     for y in range(self.boardSize):
       print(self.boardSize-y-1,end='\t')
@@ -55,12 +80,6 @@ class Board:
     print(end='\t')
     for i in range(self.boardSize):
       print(i,end='\t  ')
-  def _boundsCheck(self,x:int,y:int):
-    return x>0 and x<self.boardSize and y>0 and y<self.boardSize
-  def handleMove(self,xInitial:int,yInitial:int,xFinal:int,yFinal:int) ->bool:
-    if not self._boundsCheck(xInitial,yInitial): return False
-    if not self._boundsCheck(xFinal,yFinal):return False
-    if self._isEmpty(xInitial,yInitial):return False
-    
+    print()
 board=Board()
 board.display()
