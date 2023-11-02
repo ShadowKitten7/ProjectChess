@@ -1,4 +1,4 @@
-from Chessboard import Board
+from Game import Board
 import pygame
 import time
 import io
@@ -165,9 +165,8 @@ class MainGame:
         self.screen.fill(self.c.border)
         for x in range(8):
             for y in range(8):
-                square = self.board.getSquare(x, y)
                 yPos = self.yOffset((7 - y) * self.c.scale)
-                squareColour = square.colour
+                squareColour = (x+y)%2
                 if squareColour == 1:
                     pygame.draw.rect(
                         self.screen,
@@ -197,14 +196,13 @@ class MainGame:
     def snap(self, x, scale):
         return round(x * scale) / scale
 
-    def displayPieces(self):  # Show the pieces
+    def displayPieces(self):  # Show the piecesf
         for x in range(8):
             for y in range(8):
-                square = self.board.getSquare(x, y)
+                if self.board._isEmpty(x,y): continue
                 yPos = self.yOffset((7 - y) * self.c.scale)
-                if square.piece != None:
-                    self.showPiece(
-                        square.piece,
+                self.showPiece(
+                        self.board._getPiece(x,y),
                         self.xOffset(x * self.c.scale) + self.c.scale // 2,
                         yPos + self.c.scale // 2,
                     )
@@ -288,7 +286,7 @@ class MainGame:
         pygame.display.update()
 
     def promotionBanner(self, pos):
-        colour = int(self.board.getPiece(pos[0], 7 - pos[1]).colour.name == "White")
+        colour = int(self.board._getPiece(pos[0], 7 - pos[1]).colour.name == "White")
         x, y = self.xOffset(pos[0] * self.c.scale + self.c.scale // 2), \
             self.yOffset(pos[1] * self.c.scale + self.c.scale //2
         )
@@ -324,7 +322,7 @@ class MainGame:
         startTime = time.monotonic()
         done = False
         speed = round(self.c.timeToMove * self.t)
-        startPiece = self.board.removePiece(startPos[0], 7 - startPos[1])
+        startPiece = self.board._removePiece(startPos[0], 7 - startPos[1])
         pos = [
             self.xOffset(startPos[0] * self.c.scale + self.c.scale // 2),
             self.yOffset(startPos[1] * self.c.scale + self.c.scale // 2),
@@ -343,7 +341,7 @@ class MainGame:
             pygame.display.update()
             if pos[0] == target[0] and pos[1] == target[1]:
                 done = True
-        self.board.getSquare(startPos[0], 7 - startPos[1]).addPiece(startPiece)
+        self.board._setPiece(startPos[0], 7 - startPos[1],startPiece)
         endTime = time.monotonic()
         self.t = round(speed / timedelta(seconds=endTime - startTime).total_seconds())
 
@@ -358,13 +356,13 @@ class MainGame:
         return self.moveList
 
     def makeMove(self, startPos, endPos):
-        piece = self.board.getPiece(
+        piece = self.board._getPiece(
             startPos[0], 7 - startPos[1]
         )  # Piece at starting location
         if piece != None and self.xnor(
             piece.colour.name == "White", self.whiteToPlay
         ):  # Either white to move, and white selected or
-            valid = self.board.validMove(
+            valid = self.board.handleMove(
                 startPos[0], 7 - startPos[1], endPos[0], 7 - endPos[1]
             )  # Check for move validity after converting coordinates to board
             if valid:
