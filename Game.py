@@ -146,6 +146,12 @@ class Board:
         return self.queenMove(xInitial,yInitial,xFinal,yFinal)
       case 'Pawn':
         return self.pawnMove(xInitial,yInitial,xFinal,yFinal)
+  def makeMove(self,xInitial:int,yInitial:int,xFinal:int,yFinal:int):
+    startingPiece = self._removePiece(xInitial,yInitial)
+    endingPiece = self._removePiece(xFinal,yFinal)
+    self._setPiece(xFinal,yFinal,startingPiece)
+    return endingPiece
+    
   def display(self):
     for y in range(self.boardSize):
       print(self.boardSize-y-1,end='\t')
