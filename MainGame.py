@@ -106,20 +106,20 @@ class MainGame:
 
     def loadPieces(self):
         white = []
-        white.append(self.convertResource("assets/Chess_plt45.svg", self.scaleFactor))
-        white.append(self.convertResource("assets/Chess_nlt45.svg", self.scaleFactor))
-        white.append(self.convertResource("assets/Chess_blt45.svg", self.scaleFactor))
-        white.append(self.convertResource("assets/Chess_rlt45.svg", self.scaleFactor))
-        white.append(self.convertResource("assets/Chess_qlt45.svg", self.scaleFactor))
-        white.append(self.convertResource("assets/Chess_klt45.svg", self.scaleFactor))
+        white.append(self.convertResource("assets/White Pawn.svg", self.scaleFactor))
+        white.append(self.convertResource("assets/White Knight.svg", self.scaleFactor))
+        white.append(self.convertResource("assets/White Bishop.svg", self.scaleFactor))
+        white.append(self.convertResource("assets/White Rook.svg", self.scaleFactor))
+        white.append(self.convertResource("assets/White Queen.svg", self.scaleFactor))
+        white.append(self.convertResource("assets/White King.svg", self.scaleFactor))
         self.pieceIcons.append(white)
         black = []
-        black.append(self.convertResource("assets/Chess_pdt45.svg", self.scaleFactor))
-        black.append(self.convertResource("assets/Chess_ndt45.svg", self.scaleFactor))
-        black.append(self.convertResource("assets/Chess_bdt45.svg", self.scaleFactor))
-        black.append(self.convertResource("assets/Chess_rdt45.svg", self.scaleFactor))
-        black.append(self.convertResource("assets/Chess_qdt45.svg", self.scaleFactor))
-        black.append(self.convertResource("assets/Chess_kdt45.svg", self.scaleFactor))
+        black.append(self.convertResource("assets/Black Pawn.svg", self.scaleFactor))
+        black.append(self.convertResource("assets/Black Knight.svg", self.scaleFactor))
+        black.append(self.convertResource("assets/Black Bishop.svg", self.scaleFactor))
+        black.append(self.convertResource("assets/Black Rook.svg", self.scaleFactor))
+        black.append(self.convertResource("assets/Black Queen.svg", self.scaleFactor))
+        black.append(self.convertResource("assets/Black King.svg", self.scaleFactor))
         self.pieceIcons.append(black)
 
     def xOffset(self, x=0):

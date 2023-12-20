@@ -151,6 +151,7 @@ class Auth:
             return False
         self.createEntry(username,password,1000)
         self.loginState=0
+        self.usernameBox.clear()
         self.passwordBox.clear()
         
         return True
