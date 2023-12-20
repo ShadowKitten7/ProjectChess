@@ -92,7 +92,7 @@ class Auth:
                 self.passwordBox.panic()
                 valid=False
             if valid:
-                return self.authorize(username,password)
+                return self.authorise(username,password)
             else:
                 return False        
     def centreRect(self,rect,x,y):
@@ -120,7 +120,7 @@ class Auth:
         self.renderTextCentred(self.auth_font,(self.width*2//3,self.height*17//20),'Player 2')
         if len(self.players)==2:
             self.renderTextCentred(self.auth_font,(self.width*2//3,self.height*9//10),self.players[1][0])
-    def renderSignUp(self):
+    def renderSignup(self):
         self.screen.fill(self.background)
         self.renderTextCentred(self.title_font,(self.width//2,self.height//5),'Welcome to Project Chess')
         self.renderTextCentred(self.subtitle_font,(self.width//2,self.height//5+self.gc.scale),'Sign Up')
@@ -138,7 +138,7 @@ class Auth:
         if self.loginState in (0,1):
             self.renderLogin()
         else:
-            self.renderSignUp()
+            self.renderSignup()
 
         pygame.display.update()
         self.toRender=False
@@ -158,7 +158,7 @@ class Auth:
         
         return True
 
-    def authorize(self,username,password):
+    def authorise(self,username,password):
         if username not in self.data:
             self.alert='Invalid username, Sign up?'
             self.usernameBox.panic()
