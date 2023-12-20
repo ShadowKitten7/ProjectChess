@@ -154,7 +154,16 @@ class MainGame:
         winner='White' if self.whiteToPlay else 'Black'
         text_rect=self.namefont.get_rect(winner+' wins')
         self.namefont.render_to(self.screen,self.convertRect(text_rect,self.c.scale*4,self.c.scale*4),winner+' wins')
-        
+        pygame.display.update()
+
+    def drawBanner(self):
+        self.drawScreen()
+        x,y=self.c.scale*5,self.c.scale*5//2
+        pygame.draw.rect(self.screen,self.c.gameOver_colour,(self.xOffset((self.c.scale*8-x)//2),self.yOffset((self.c.scale*8-y)//2),x,y),x,x//35)
+        text_rect=self.namefont.get_rect('GAME OVER')
+        self.namefont.render_to(self.screen,self.convertRect(text_rect,self.c.scale*4,self.c.scale*4-y//4),'GAME OVER')
+        text_rect=self.namefont.get_rect('Draw by insufficient material')
+        self.namefont.render_to(self.screen,self.convertRect(text_rect,self.c.scale*4,self.c.scale*4),'Draw by insufficient material')
         pygame.display.update()
     def displayBoard(self):  # Show the board squares
         self.screen.fill(self.c.border)
@@ -357,6 +366,10 @@ class MainGame:
                 p = self.board.makeMove(
                     startPos[0], 7 - startPos[1], endPos[0], 7 - endPos[1]
                 )
+                if self.board.drawCheck():
+                    self.drawBanner()
+                    self.done=True
+                    return
                 if p != None and p.type.name == "King":  # King captured
                     self.WinBanner()
                     self.done=True

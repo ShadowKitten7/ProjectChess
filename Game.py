@@ -41,8 +41,6 @@ class Board:
     piece=self.board[x][y]
     self.board[x][y]=None
     return piece
-  def getCode(self,x:int,y:int):
-    return chr(ord('A')+y)+chr(ord('1')+x)
   def promotionCheck(self,x,y):
     p = self._getPiece(x,y)
     return (p.colour.name == "White" and p.type.name == "Pawn" and y == 7) or (
@@ -172,14 +170,35 @@ class Board:
     endingPiece = self._removePiece(xFinal,yFinal)
     self._setPiece(xFinal,yFinal,startingPiece)
     return endingPiece
-    
-  def display(self):
-    for y in range(self.boardSize):
-      print(self.boardSize-y-1,end='\t')
-      for x in range(self.boardSize):
-        print(self._getPiece(x,-y-1),end='\t')
-      print()
-    print(end='\t')
-    for i in range(self.boardSize):
-      print(i,end='\t  ')
-    print()
+  
+  def drawCheck(self):
+    whiteKnights,whiteBishops,blackKnights,blackBishops=0,0,0,0
+    for x in range(8):
+      for y in range(8):
+        if self._isEmpty(x,y): continue
+        piece = self._getPiece(x,y)
+        if piece.type.value in ('Pawn','Queen','Rook'):
+          return False
+        if piece.type.value=='Bishop':
+          if piece.colour.value == 'Black':
+            blackBishops+=1
+          else:
+            whiteBishops+=1
+        if piece.type.value == 'Knight':
+          if piece.colour.value == 'Black':
+            blackKnights+=1
+          else:
+            whiteKnights+=1
+    if whiteKnights==0 and whiteBishops==0:#white is lone king
+      if blackBishops==1 and blackKnights==0:
+        return True
+      if blackKnights==2 and blackBishops==0:
+        return True
+      if blackBishops==0 and blackKnights==0:
+        return True
+    elif blackBishops==0 and blackKnights==0:
+      if whiteBishops==1 and whiteKnights==0:
+        return True
+      if whiteKnights==2 and whiteBishops==0:
+        return True
+    return False
