@@ -4,7 +4,7 @@ import os
 import pygame
 import pygame.freetype
 
-from MainGame import game_constants
+from GameGUI import game_constants
 class Auth:
     def __init__(self,screen,path):
         self.whitePlayer=None
@@ -44,12 +44,14 @@ class Auth:
                     return None
                 if len(self.players)==2:
                     if self.loginbutton.handle_event(event):
+                        self.saveData()
                         return self.players
                 if self.loginState in (0,1):
                     self.login(event)
                 else:
                     self.signup(event)
                 self.render()
+        
     def signup(self,event):
         if self.usernameBox.handle_event(event) or self.passwordBox.handle_event(event):
             self.toRender=True

@@ -1,4 +1,4 @@
-from MainGame import MainGame, game_constants,checkRequirements
+from GameGUI import MainGame, game_constants,checkRequirements
 import pygame
 import random
 from Auth import Auth

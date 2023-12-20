@@ -23,7 +23,6 @@ class game_constants:
         self.icon_border = (self.scale//40, (255, 165, 0))
         self.promote_colour = (160, 160, 100)
         self.gameOver_colour=(150,150,150)
-        self.turbo_amount = 0.6
 
     def screenSize(self):
         return (
@@ -274,13 +273,6 @@ class MainGame:
             self.screen, (self.xOffset(self.c.scale), self.c.padding), t
         )
 
-    def turbo(self, on=True):
-        if on:
-            self.c.timeToMove *= self.c.turbo_amount
-        else:
-            self.c.timeToMove /= self.c.turbo_amount
-        self.c.timeToMove = round(self.c.timeToMove * 100) / 100
-
     def render(self):
         self.drawScreen()
         pygame.display.update()
@@ -347,8 +339,8 @@ class MainGame:
 
     def end(self):
         if self.done:
-            with open('data/state.bin','wb'):
-                pass
+            if os.path.isfile('data/state.bin'):
+                os.remove('data/state.bin')
         else:
             state=State(self)
             state.saveState()
