@@ -12,6 +12,4 @@ users=auth.mainLoop()
 if users is not None:
     r=random.randint(0,1)
     game = MainGame(screen, users[r], users[1-r])
-    moves=game.playGame()
-    for move in moves:
-        print('\t'.join(move))
+    game.playGame()
