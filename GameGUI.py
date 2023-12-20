@@ -35,13 +35,11 @@ class State:
         self.board=gameObject.board.board
         self.whitePlayer=gameObject.whitePlayer
         self.blackPlayer=gameObject.blackPlayer
-        self.moveList=gameObject.moveList
         self.whiteToPlay=gameObject.whiteToPlay
     def unwrap(self,gameObject):
         gameObject.board.board=self.board
         gameObject.whitePlayer=self.whitePlayer
         gameObject.blackPlayer=self.blackPlayer
-        gameObject.moveList=self.moveList
         gameObject.whiteToPlay=self.whiteToPlay
     def saveState(self):
         with open('data/state.bin','wb') as file:
@@ -76,7 +74,6 @@ class MainGame:
         self.startPos = [-1, -1]  # start position for each piece, defualt is -1,-1
         self.endPos = [-1, -1]
         self.scaleFactor = self.c.piece_size / 45
-        self.moveList = []
         self.loadPieces()  # load piece resources
         self.whiteToPlay = True
         self.promotionOngoing = False
@@ -90,7 +87,6 @@ class MainGame:
         x2, y2 = endPos[0], 7 - endPos[1]
         p1 = chr(ord("a") + x1) + str(y1 + 1)
         p2 = chr(ord("a") + x2) + str(y2 + 1)
-        self.moveList.append((p1, p2))
 
     def convertResource(self, src, scale=1.0):  # Resize and load each image
         svg_string = open(src, "rt",encoding='utf-8').read()
@@ -344,8 +340,6 @@ class MainGame:
         else:
             state=State(self)
             state.saveState()
-        
-        return self.moveList
 
     def makeMove(self, startPos, endPos):
         piece = self.board._getPiece(
