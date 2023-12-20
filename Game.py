@@ -19,10 +19,9 @@ class Piece:  # Represents each piece, each piece has a colour and type
 
 class Board:
   def __init__(self) -> None:
-    self.boardSize=8
     self.promotionOptions = [[],[]]
     #Empty board
-    self.board=[[None for i in range(self.boardSize)] for j in range(self.boardSize)]
+    self.board=[[None for i in range(8)] for j in range(8)]
     # (0,0) is considered to be the A1 square
     self._populate()
     # Create and store the Piece objects into promotionOptions
@@ -61,7 +60,7 @@ class Board:
     #Piece types from A to H
     types=[PieceType.Rook,PieceType.Knight,PieceType.Bishop,PieceType.Queen,PieceType.King]
     types.extend([PieceType.Bishop,PieceType.Knight,PieceType.Rook])
-    for i in range(self.boardSize):
+    for i in range(8):
       #Pawns
       self._setPiece(i,1,Piece(PieceColour.White,PieceType.Pawn))
       self._setPiece(i,6,Piece(PieceColour.Black,PieceType.Pawn))
@@ -70,7 +69,7 @@ class Board:
       #Black pieces
       self._setPiece(i,7,Piece(PieceColour.Black,types[i]))
   def _boundsCheck(self,x:int,y:int):
-    return 0 <= x < self.boardSize and 0 <= y < self.boardSize
+    return 0 <= x < 8 and 0 <= y < 8
   
   def beam(self,initialPos:tuple,finalPos:tuple,xDir:int,yDir:int):
     x,y=initialPos[0]+xDir,initialPos[1]+yDir;
