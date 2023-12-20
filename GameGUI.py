@@ -82,12 +82,6 @@ class MainGame:
         self.done=False
         self.render()
 
-    def convertMove(self, startPos, endPos):
-        x1, y1 = startPos[0], 7 - startPos[1]
-        x2, y2 = endPos[0], 7 - endPos[1]
-        p1 = chr(ord("a") + x1) + str(y1 + 1)
-        p2 = chr(ord("a") + x2) + str(y2 + 1)
-
     def convertResource(self, src, scale=1.0):  # Resize and load each image
         svg_string = open(src, "rt",encoding='utf-8').read()
         start = svg_string.find("<svg")
@@ -361,7 +355,6 @@ class MainGame:
                 startPos[0], 7 - startPos[1], endPos[0], 7 - endPos[1]
             )  # Check for move validity after converting coordinates to board
             if valid:
-                self.convertMove(startPos, endPos)
                 self.Transition(startPos, endPos)
                 p = self.board.makeMove(
                     startPos[0], 7 - startPos[1], endPos[0], 7 - endPos[1]
