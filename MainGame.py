@@ -45,19 +45,19 @@ class State:
         gameObject.moveList=self.moveList
         gameObject.whiteToPlay=self.whiteToPlay
     def saveState(self):
-        with open('temp/state.bin','wb') as file:
+        with open('data/state.bin','wb') as file:
             pickle.dump(self,file)
 def checkRequirements():
-    if not os.path.isdir('temp/'):
-        os.mkdir('temp/')
-        with open('temp/users.txt','x'):
+    if not os.path.isdir('data/'):
+        os.mkdir('data/')
+        with open('data/users.txt','x'):
             pass
         
 def retrieveState(gameObject):
     try:
-        with open('temp/state.bin','rb') as file:
+        with open('data/state.bin','rb') as file:
             pickle.load(file).unwrap(gameObject)
-        with open('temp/state.bin','wb') as file:
+        with open('data/state.bin','wb') as file:
             pass
     except FileNotFoundError:
         return
@@ -347,7 +347,7 @@ class MainGame:
 
     def end(self):
         if self.done:
-            with open('temp/state.bin','wb'):
+            with open('data/state.bin','wb'):
                 pass
         else:
             state=State(self)

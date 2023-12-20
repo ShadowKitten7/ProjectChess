@@ -13,7 +13,7 @@ class Auth:
         self.width=screen.get_width()
         self.height=screen.get_width()
         self.encoding='utf-8'
-        self.path='temp/'+path
+        self.path='data/'+path
         self.gc=game_constants()
         self.background=(108, 108, 108)
         self.title_font=pygame.freetype.Font('assets/nexa-handmade.otf',self.gc.scale*3//4)
