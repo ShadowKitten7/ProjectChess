@@ -378,8 +378,8 @@ class MainGame:
         if not self.promotionOngoing and not self.done:
             self.render()
 
-    def playGame(self,reload=False):
-        if reload:
+    def playGame(self):
+        if os.path.isfile('data/state.bin'):
             retrieveState(self)
         self.render()
         while True:
