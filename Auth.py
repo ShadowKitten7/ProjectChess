@@ -203,7 +203,7 @@ class Auth:
                 if line[i]==',':
                     index=i
                     break
-            username=line[:index]#Extract the username
+            username=line[:index] #Extract the username
             if username in self.unsavedData:#If it has been updated
                 tempfile.write(self.convertDataToEntry(self.unsavedData,username))
                 self.unsavedData.pop(username)
