@@ -172,33 +172,26 @@ class Board:
     return endingPiece
   
   def drawCheck(self):
-    whiteKnights,whiteBishops,blackKnights,blackBishops=0,0,0,0
+    knights, bishops=0,0
+    white,black=0,0
     for x in range(8):
       for y in range(8):
         if self._isEmpty(x,y): continue
         piece = self._getPiece(x,y)
+        if piece.type.value =='King':continue
         if piece.type.value in ('Pawn','Queen','Rook'):
           return False
         if piece.type.value=='Bishop':
-          if piece.colour.value == 'Black':
-            blackBishops+=1
-          else:
-            whiteBishops+=1
+          bishops+=1
         if piece.type.value == 'Knight':
-          if piece.colour.value == 'Black':
-            blackKnights+=1
-          else:
-            whiteKnights+=1
-    if whiteKnights==0 and whiteBishops==0:#white is lone king
-      if blackBishops==1 and blackKnights==0:
-        return True
-      if blackKnights==2 and blackBishops==0:
-        return True
-      if blackBishops==0 and blackKnights==0:
-        return True
-    elif blackBishops==0 and blackKnights==0:
-      if whiteBishops==1 and whiteKnights==0:
-        return True
-      if whiteKnights==2 and whiteBishops==0:
-        return True
+          knights+=1
+        if piece.colour.value=='Black':
+          black+=1
+        else:
+          white+=1
+    if knights+bishops==0:
+      return True
+    if white==0 or black==0:
+      if bishops==1 and knights==0: return True
+      if knights==2 and bishops==0: return True
     return False
